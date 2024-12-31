@@ -1,6 +1,9 @@
 # ignore local file for ftp data
 ftpdata/
 
+# ignore local file for db data
+pgdata/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
