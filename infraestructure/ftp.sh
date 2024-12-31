@@ -1,0 +1,13 @@
+docker run -d \
+-v $FTP_DATA:/home/vsftpd \
+-p 20:20 \
+-p 21:21 \
+-p 990:990 \
+-p "$FTP_MIN_PORT-$FTP_MAX_PORT":"$FTP_MIN_PORT-$FTP_MAX_PORT" \
+-e FTP_USER=$FTP_USER \
+-e FTP_PASS=$FTP_PASS \
+-e PASV_ADDRESS=$FTP_ADDR \
+-e PASV_MIN_PORT=$FTP_MIN_PORT \
+-e PASV_MAX_PORT=$FTP_MAX_PORT \
+--name $FTP_DOCKER_NAME \
+--restart=always lhauspie/vsftpd-alpine
