@@ -1,0 +1,35 @@
+services:
+  ftp:
+    image: lhauspie/vsftpd-alpine
+    container_name: ftp
+    environment:
+      FTP_USER: ${FTP_USER}
+      FTP_PASS: ${FTP_PASS}
+      PASV_ADDRESS: ${FTP_ADDR}
+      PASV_MIN_PORT: ${FTP_MIN_PORT}
+      PASV_MAX_PORT: ${FTP_MAX_PORT}
+      LOG_STDOUT: YES
+    ports:
+      - "20:20"
+      - "21:21"
+      - "${FTP_MIN_PORT}-${FTP_MAX_PORT}:${FTP_MIN_PORT}-${FTP_MAX_PORT}"
+      - "990:990"
+    volumes:
+      - ${FTP_DATA}:/home/vsftpd/${FTP_USER}
+    restart: always
+
+  db:
+    image: postgres:17-alpine
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: $POSTGRES_USER
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - db-data:/var/lib/postgresql/pgdata
+    restart: always
+
+volumes:
+  db-data:
