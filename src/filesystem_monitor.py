@@ -5,8 +5,9 @@ from watchdog.events import FileSystemEventHandler
 class EventHandler(FileSystemEventHandler):
     
     @staticmethod
-    def on_created(self, event):
-        print(f"File created: {event.src_path}")
+    def on_created(event):
+        if not event.is_directory:
+            print(f"File created: {event.src_path}")
 
 class FileSystemWatcher:
 
