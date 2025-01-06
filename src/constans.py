@@ -98,3 +98,4 @@ OMM_STATIONS = [
     ]
 
 END_OF_MESSAGE = "NNNN"
+END_OF_REPORT = '='

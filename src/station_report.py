@@ -7,7 +7,4 @@ class StationReport:
     def __str__(self):
         if self.message is None:
             return f"{self.id} nil="
-        
-        pos = self.message.index(self.id)
-        message = f"{self.id} {self.message[pos:]}"
-        return message
+        return self.message

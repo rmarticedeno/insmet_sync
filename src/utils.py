@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from .constans import END_OF_MESSAGE, NEWMESSAGEHEADER
+from .constans import END_OF_MESSAGE, NEWMESSAGEHEADER, TERRESTIALREPORTID, END_OF_REPORT
 from .joint_report import JointReport
 from .station_report import StationReport
 
@@ -13,6 +13,23 @@ def get_oneline_message(path: str):
     message = ' '.join(cleaned_lines)
     message = re.split(END_OF_MESSAGE, message, flags=re.IGNORECASE)[0].strip()
     return message
+
+def read_station_report(path):
+    with open(path, 'r') as f:
+        line = f.readline()
+
+        while not TERRESTIALREPORTID in line:
+            line = f.readline()
+
+        line = f.readline()
+        station_id = line.strip().split(' ')[0]
+        data = line.strip()
+
+        while not END_OF_REPORT in line:
+            line = f.readline()
+            data += f'\n{line}'
+
+        return StationReport(station_id, data)
 
 def read_bulletin_stations(f):
     stations = []
@@ -31,7 +48,7 @@ def read_bulletin_stations(f):
             continue
 
         data = stationstr
-        while '=' not in stationstr:
+        while END_OF_REPORT not in stationstr:
             stationstr = f.readline().strip()
             data += f'\n{stationstr}'
 
