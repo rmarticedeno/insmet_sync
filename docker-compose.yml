@@ -1,4 +1,12 @@
 services:
+  scanner:
+    build: .
+    environment:
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ${FTP_DATA}:/app/${FTP_DATA}
+    restart: always
+
   ftp:
     image: lhauspie/vsftpd-alpine
     container_name: ftp
