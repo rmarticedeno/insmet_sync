@@ -17,19 +17,3 @@ services:
     volumes:
       - ${FTP_DATA}:/home/vsftpd/${FTP_USER}
     restart: always
-
-  db:
-    image: postgres:17-alpine
-    container_name: db
-    environment:
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_USER: $POSTGRES_USER
-    ports:
-      - ${POSTGRES_PORT}:5432
-    volumes:
-      - db-data:/var/lib/postgresql/pgdata
-    restart: always
-
-volumes:
-  db-data:
