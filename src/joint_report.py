@@ -1,5 +1,6 @@
-from constans import STATIONID, COUNTRY, TERRESTIALREPORTID, ALL_STATIONS, OMM_STATIONS, NEWMESSAGEHEADER
-from station_report import StationReport
+from .constans import STATIONID, COUNTRY, TERRESTIALREPORTID, ALL_STATIONS, OMM_STATIONS, NEWMESSAGEHEADER
+from .station_report import StationReport
+from typing import List
 
 class JointReport:
 
@@ -23,15 +24,19 @@ class JointReport:
 
     def __get_stations(self, omm = False):
         predicate = lambda x: omm ^ (x in OMM_STATIONS)
-        return [ 
-            StationReport( x, None) for x in ALL_STATIONS.keys() if predicate(x)] 
+        stations = []
+        for x in ALL_STATIONS.keys():
+            if predicate(x):
+                station = StationReport(x)
+                stations.append(station)
+        return stations
 
     def __get_header(self, omm = False):
         value = "20" if omm else "40"
-        return f"""{NEWMESSAGEHEADER} {self.report_number}\n{self.data_type}{COUNTRY}{value} {STATIONID} {self.month_day}{self.hour}\n{TERRESTIALREPORTID} {self.month_day}{self.hour}"""
+        return f"""{NEWMESSAGEHEADER} {self.report_number}\n{self.data_type}{COUNTRY}{value} {STATIONID} {self.month_day}{self.hour}\n{TERRESTIALREPORTID} {self.month_day}{self.hour[:2]}1"""
     
     def __get_trailer(self):
-        return "\n\n\nnnnn"
+        return "\n\n\n\nNNNN"
 
     def __str__(self):
         header1 = self.__get_header(True)
@@ -45,6 +50,7 @@ class JointReport:
     def to_file(self):
         with open(f'WX.{self.hour[:2]}', '+w', newline='\r\n') as w:
             w.write(str(self))
+    
     
 if __name__ == "__main__":
     JointReport().to_file()
