@@ -11,7 +11,7 @@ class EventHandler(FileSystemEventHandler):
         print(event)
         if not event.is_directory:
             # for testing purposes ignore WX files
-            if event[-4:-2] == "WX":
+            if event.src_path[-5:-3] == "WX":
                 return
 
             report = Path(event.src_path)
