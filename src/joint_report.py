@@ -22,7 +22,7 @@ class JointReport:
             return "SN"
 
     def __get_stations(self, omm = False):
-        predicate = lambda x: omm ^ (x in OMM_STATIONS)
+        predicate = lambda x: not (omm ^ (x in OMM_STATIONS))
         stations = []
         for x in ALL_STATIONS.keys():
             if predicate(x):
