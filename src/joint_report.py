@@ -1,6 +1,5 @@
 from .constans import STATIONID, COUNTRY, TERRESTIALREPORTID, ALL_STATIONS, OMM_STATIONS, NEWMESSAGEHEADER
 from .station_report import StationReport
-from typing import List
 
 class JointReport:
 
@@ -47,11 +46,12 @@ class JointReport:
 
         return f"""{header1}\n{body1}{trailer}\n{header2}\n{body2}{trailer}"""
     
-    def to_file(self):
-        with open(f'WX.{self.hour[:2]}', '+w', newline='\r\n') as w:
-            w.write(str(self))
-    
-    
-if __name__ == "__main__":
-    JointReport().to_file()
-    print(JointReport())
+    def update(self, report: StationReport):
+        for x in self.omm_stations:
+            if x.id == report.id:
+                x.message = report.message
+                return
+        
+        for x in self.national_stations:
+            if x.id == report.id:
+                x.message = report.message

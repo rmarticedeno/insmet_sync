@@ -1,0 +1,2 @@
+# Exec script hourly
+0 * * * * /app/cron.py

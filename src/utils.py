@@ -82,6 +82,5 @@ def read_bulletin(path):
     return result
 
 def write_bulletin(path, bulletin):
-    destination = Path(path) / f'WX.{bulletin.hour[:2]}'
-    with open(destination, '+w', newline='\r\n') as w:
+    with open(path, '+w', newline='\r\n') as w:
             w.write(str(bulletin))

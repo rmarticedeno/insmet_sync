@@ -1,9 +1,15 @@
 FROM python:3.11-alpine
 
-COPY . /app
-
 WORKDIR /app
+
+COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT python main.py
+COPY crontab /etc/cron/crontab
+
+RUN crontab /etc/cron/crontab
+
+COPY . .
+
+ENTRYPOINT crond && python cron.py && python main.py
