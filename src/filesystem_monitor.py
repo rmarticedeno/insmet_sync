@@ -10,6 +10,10 @@ class EventHandler(FileSystemEventHandler):
     def on_created(event):
         print(event)
         if not event.is_directory:
+            # for testing purposes ignore WX files
+            if event[-4:-2] == "WX":
+                return
+
             report = Path(event.src_path)
             hour = report.name[-2:]
 
