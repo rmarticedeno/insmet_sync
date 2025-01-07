@@ -42,7 +42,7 @@ class FileSystemWatcher:
 
     def main_loop(self):
         event_handler = EventHandler()
-        self.watcher.schedule(event_handler, self.path, recursive = True)
+        self.watcher.schedule(event_handler, self.path)
         self.watcher.start()
         try:
             while True:
