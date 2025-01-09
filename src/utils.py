@@ -26,8 +26,9 @@ def read_station_report(path):
         data = line.strip()
 
         while not END_OF_REPORT in line:
-            line = f.readline()
-            data += f'\n{line}'
+            line = f.readline().strip()
+            if len(line) > 0:
+                data += f'\n{line}'
 
         return StationReport(station_id, data)
 
@@ -76,6 +77,9 @@ def read_bulletin(path):
         next_line = f.readline()
         while NEWMESSAGEHEADER not in next_line:
             next_line = f.readline()
+
+        # skip start of block
+        f.readline()
 
         result.national_stations = read_bulletin_stations(f)
 

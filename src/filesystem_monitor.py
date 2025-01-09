@@ -1,19 +1,19 @@
 import time, os
 from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileModifiedEvent
+from watchdog.events import FileSystemEventHandler
 from pathlib import Path
 from .utils import read_bulletin, read_station_report, write_bulletin
 
 class EventHandler(FileSystemEventHandler):
-    
+
     @staticmethod
     def on_created(event):
-        print(event)
         if not event.is_directory:
-            # for testing purposes ignore WX files
+
+             # for testing purposes ignore WX files
             if event.src_path[-5:-3] == "WX":
                 return
-
+            
             report = Path(event.src_path)
             hour = report.name[-2:]
 
@@ -39,17 +39,24 @@ class FileSystemWatcher:
     def __init__(self, path: str):
         self.watcher = Observer()
         self.path = path
+        # self.queue = event_list
 
     def main_loop(self):
         event_handler = EventHandler()
         self.watcher.schedule(event_handler, self.path)
+        self.watcher.daemon = True
         self.watcher.start()
+
         try:
             while True:
                 time.sleep(5)
+                # if event_list.empty():
+                #     time.sleep(0.1)
+                # else:
+                #    self._handle_event()
         except:
             self.watcher.stop()
             print("Watcher Stopped")
- 
-        self.watcher.join()
+        
+
 
