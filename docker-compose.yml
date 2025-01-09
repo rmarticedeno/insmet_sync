@@ -10,7 +10,11 @@ services:
     restart: always
 
   ftp:
-    image: lhauspie/vsftpd-alpine
+    build:
+      context: .
+      dockerfile: ftp.Dockerfile
+      args:
+        CERT_FINGERPRINT: ${CERT_FINGERPRINT}
     container_name: ftp
     environment:
       FTP_USER: ${FTP_USER}
@@ -19,6 +23,7 @@ services:
       PASV_MIN_PORT: ${FTP_MIN_PORT}
       PASV_MAX_PORT: ${FTP_MAX_PORT}
       LOG_STDOUT: YES
+      FTP_MODE: ${FTP_MODE}
     ports:
       - "20:20"
       - "21:21"
