@@ -15,7 +15,8 @@ class EventHandler(FileSystemEventHandler):
                 return
             
             report = Path(event.src_path)
-            hour = report.name[-2:]
+            station_report = read_station_report(report.absolute())
+            hour = station_report.hour
 
             bulletin_path = os.getenv('BULLETIN_DATA') or '.'
             target = Path(bulletin_path) / f'WX.{hour}'
@@ -25,7 +26,10 @@ class EventHandler(FileSystemEventHandler):
                 return
             
             bulletin = read_bulletin(target.absolute())
-            station_report = read_station_report(report.absolute())
+           
+            if bulletin.month_day != station_report.day:
+                print(f"station report out of date, expected: {bulletin.month_day} recieved {station_report.day}")
+                return
 
             bulletin.update(station_report)
 
@@ -39,7 +43,6 @@ class FileSystemWatcher:
     def __init__(self, path: str):
         self.watcher = Observer()
         self.path = path
-        # self.queue = event_list
 
     def main_loop(self):
         event_handler = EventHandler()
@@ -50,10 +53,6 @@ class FileSystemWatcher:
         try:
             while True:
                 time.sleep(5)
-                # if event_list.empty():
-                #     time.sleep(0.1)
-                # else:
-                #    self._handle_event()
         except:
             self.watcher.stop()
             print("Watcher Stopped")

@@ -20,6 +20,9 @@ def read_station_report(path):
 
         while not TERRESTIALREPORTID in line:
             line = f.readline()
+        dayandhour = line.split(' ')[-1]
+        day = dayandhour[:2]
+        hour = dayandhour[2:-2]
 
         line = f.readline()
         station_id = line.strip().split(' ')[0]
@@ -30,7 +33,7 @@ def read_station_report(path):
             if len(line) > 0:
                 data += f'\n{line}'
 
-        return StationReport(station_id, data)
+        return StationReport(station_id, data, day, hour)
 
 def read_bulletin_stations(f):
     stations = []
