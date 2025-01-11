@@ -1,4 +1,4 @@
-import time, os
+import time, os, shutil
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
@@ -10,33 +10,46 @@ class EventHandler(FileSystemEventHandler):
     def on_created(event):
         if not event.is_directory:
 
-             # for testing purposes ignore WX files
-            if event.src_path[-5:-3] == "WX":
-                return
+            try:
+
+                # for testing purposes ignore WX files
+                if event.src_path[-5:-3] == "WX":
+                    return
+                
+                report = Path(event.src_path)
+                station_report = read_station_report(report.absolute())
+                hour = station_report.hour
+
+                bulletin_path = os.getenv('BULLETIN_DATA') or '.'
+                target = Path(bulletin_path) / f'WX.{hour}'
+
+                if not target.exists():
+                    print(f"Bulletin not found {target}")
+                    return
+                
+                bulletin = read_bulletin(target.absolute())
             
-            report = Path(event.src_path)
-            station_report = read_station_report(report.absolute())
-            hour = station_report.hour
+                if bulletin.month_day != station_report.day:
+                    print(f"station report out of date, expected: {bulletin.month_day} recieved {station_report.day}")
+                    return
 
-            bulletin_path = os.getenv('BULLETIN_DATA') or '.'
-            target = Path(bulletin_path) / f'WX.{hour}'
+                bulletin.update(station_report)
 
-            if not target.exists():
-                print(f"Bulletin not found {target}")
-                return
-            
-            bulletin = read_bulletin(target.absolute())
-           
-            if bulletin.month_day != station_report.day:
-                print(f"station report out of date, expected: {bulletin.month_day} recieved {station_report.day}")
-                return
+                target.unlink()
 
-            bulletin.update(station_report)
+                write_bulletin(target.absolute(), bulletin)
 
-            target.unlink()
+                if len(os.getenv('DESTINATION_FOLDER') or "") > 0:
+                    path = Path(os.getenv('DESTINATION_FOLDER'))
 
-            write_bulletin(target.absolute(), bulletin)
-            print(f"Bulletin {target.name} Updated with {report.name}")
+                    if not path.exists():
+                        path.mkdir()
+
+                    shutil.copy(target.absolute, path)
+
+                print(f"Bulletin {target.name} Updated with {report.name}")
+            except Exception as e:
+                print(f"An error ocurred during the processing of {report} report, {e}")
 
 class FileSystemWatcher:
 
