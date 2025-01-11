@@ -5,6 +5,8 @@ services:
       PYTHONUNBUFFERED: 1
       BULLETIN_DATA: ${BULLETIN_DATA}
       FTP_DATA: ${FTP_DATA}
+      REPORT_BACKUP_DATA: ${REPORT_BACKUP_DATA}
+      REPORT_DATA: ${REPORT_DATA}
     volumes:
       - ${FTP_DATA}:/app/${FTP_DATA}
     restart: always

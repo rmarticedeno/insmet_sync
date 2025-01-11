@@ -1,17 +1,14 @@
 import time, os, shutil
-from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver 
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
 from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path
 
 class EventHandler(FileSystemEventHandler):
 
-    @staticmethod
-    def on_created(event):
+    def on_created(self, event):
         if not event.is_directory:
-
             try:
-
                 # for testing purposes ignore WX files
                 if event.src_path[-5:-3] == "WX":
                     return
@@ -34,9 +31,7 @@ class EventHandler(FileSystemEventHandler):
                     return
 
                 bulletin.update(station_report)
-
                 target.unlink()
-
                 write_bulletin(target.absolute(), bulletin)
 
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:
@@ -50,15 +45,15 @@ class EventHandler(FileSystemEventHandler):
 class FileSystemWatcher:
 
     def __init__(self, path: str):
-        self.watcher = Observer()
-        self.path = get_safe_path(path).absolute()
+        self.watcher = PollingObserver()
+        get_safe_path(path)
+        self.path = path
 
     def main_loop(self):
         event_handler = EventHandler()
         self.watcher.schedule(event_handler, self.path)
         self.watcher.daemon = True
         self.watcher.start()
-
         try:
             while True:
                 time.sleep(5)

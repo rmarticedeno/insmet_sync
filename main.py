@@ -1,5 +1,5 @@
 import os
 from src import FileSystemWatcher
 
-watch = FileSystemWatcher(os.getenv('FTP_DATA') or '.')
+watch = FileSystemWatcher(os.getenv('REPORT_DATA') or '.')
 watch.main_loop()
