@@ -100,4 +100,3 @@ venv/
 # other files
 .env
 .env.example
-crontab
