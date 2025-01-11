@@ -2,7 +2,7 @@ import time, os, shutil
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
-from .utils import read_bulletin, read_station_report, write_bulletin
+from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path
 
 class EventHandler(FileSystemEventHandler):
 
@@ -21,7 +21,7 @@ class EventHandler(FileSystemEventHandler):
                 hour = station_report.hour
 
                 bulletin_path = os.getenv('BULLETIN_DATA') or '.'
-                target = Path(bulletin_path) / f'WX.{hour}'
+                target = get_safe_path(bulletin_path) / f'WX.{hour}'
 
                 if not target.exists():
                     print(f"Bulletin not found {target}")
@@ -40,11 +40,7 @@ class EventHandler(FileSystemEventHandler):
                 write_bulletin(target.absolute(), bulletin)
 
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:
-                    path = Path(os.getenv('DESTINATION_FOLDER'))
-
-                    if not path.exists():
-                        path.mkdir()
-
+                    path = get_safe_path(os.getenv('DESTINATION_FOLDER'))
                     shutil.copy(target.absolute, path)
 
                 print(f"Bulletin {target.name} Updated with {report.name}")
@@ -55,7 +51,7 @@ class FileSystemWatcher:
 
     def __init__(self, path: str):
         self.watcher = Observer()
-        self.path = path
+        self.path = get_safe_path(path).absolute()
 
     def main_loop(self):
         event_handler = EventHandler()

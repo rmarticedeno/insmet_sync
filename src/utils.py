@@ -91,3 +91,11 @@ def read_bulletin(path):
 def write_bulletin(path, bulletin):
     with open(path, '+w', newline='\r\n') as w:
             w.write(str(bulletin))
+
+def get_safe_path(path):
+    _path = Path(path)
+
+    if not _path.exists():
+        _path.mkdir()
+
+    return _path
