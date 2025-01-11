@@ -2,7 +2,7 @@
 
 import datetime, os
 from pathlib import Path
-from src import JointReport, write_bulletin
+from src import JointReport, write_bulletin, get_safe_path
 
 now = datetime.datetime.now(datetime.timezone.utc)
 
@@ -15,7 +15,7 @@ folder = os.getenv('BULLETIN_DATA') or '.'
 
 name = f'WX.{hour[:2]}'
 
-path = Path(folder) / name
+path = get_safe_path(folder) / name
 
 if path.exists():
     path.unlink()
