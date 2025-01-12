@@ -96,7 +96,7 @@ def get_safe_path(path):
     _path = Path(path)
 
     if not _path.exists():
-        _path.mkdir()
+        _path.mkdir(parents=True, exist_ok=True)
 
     return _path
 
