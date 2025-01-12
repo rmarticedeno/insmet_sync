@@ -2,7 +2,7 @@ import time, os, shutil
 from watchdog.observers.polling import PollingObserver 
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
-from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path
+from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path, safe_file_move
 
 class EventHandler(FileSystemEventHandler):
 
@@ -27,6 +27,7 @@ class EventHandler(FileSystemEventHandler):
                 bulletin = read_bulletin(target.absolute())
             
                 if bulletin.month_day != station_report.day:
+                    safe_file_move(event.src_path, os.getenv('INVALID_PROCESSED_REPORTS'))
                     print(f"station report out of date, expected: {bulletin.month_day} recieved {station_report.day}")
                     return
 
@@ -37,6 +38,8 @@ class EventHandler(FileSystemEventHandler):
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:
                     path = get_safe_path(os.getenv('DESTINATION_FOLDER'))
                     shutil.copy(target.absolute, path)
+
+                safe_file_move(event.src_path, os.getenv('REPORT_BACKUP_DATA'))
 
                 print(f"Bulletin {target.name} Updated with {report.name}")
             except Exception as e:

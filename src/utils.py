@@ -1,4 +1,4 @@
-import re
+import re, shutil
 from pathlib import Path
 from .constans import END_OF_MESSAGE, NEWMESSAGEHEADER, TERRESTIALREPORTID, END_OF_REPORT
 from .joint_report import JointReport
@@ -99,3 +99,7 @@ def get_safe_path(path):
         _path.mkdir()
 
     return _path
+
+def safe_file_move(file_path, destination_path):
+    path = get_safe_path(destination_path)
+    shutil.move(file_path, path)

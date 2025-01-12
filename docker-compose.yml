@@ -7,6 +7,7 @@ services:
       FTP_DATA: ${FTP_DATA}
       REPORT_BACKUP_DATA: ${REPORT_BACKUP_DATA}
       REPORT_DATA: ${REPORT_DATA}
+      INVALID_PROCESSED_REPORTS: ${INVALID_PROCESSED_REPORTS}
     volumes:
       - ${FTP_DATA}:/app/${FTP_DATA}
     restart: always

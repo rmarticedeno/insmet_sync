@@ -2,3 +2,6 @@
 0 * * * * /app/cron.py
 59 * * * * find ${FTP_DATA}* -type f -mtime +1 -exec rm {} \;
 59 * * * * find ${BULLETIN_DATA}* -type f -mtime +1 -exec rm {} \;
+59 * * * * find ${REPORT_DATA}* -type f -mtime +1 -exec rm {} \;
+59 * * * * find ${REPORT_BACKUP_DATA}* -type f -mtime +1 -exec rm {} \;
+59 * * * * find ${INVALID_PROCESSED_REPORTS}* -type f -mtime +1 -exec rm {} \;
