@@ -36,7 +36,7 @@ class EventHandler(FileSystemEventHandler):
                 write_bulletin(target.absolute(), bulletin)
 
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:
-                    path = get_safe_path(os.getenv('DESTINATION_FOLDER'))
+                    path = get_safe_path(os.getenv('DESTINATION_FOLDER')) / os.getenv('DESTINATION_FOLDER_NAME')
                     shutil.copy(target.absolute, path)
 
                 safe_file_move(event.src_path, os.getenv('REPORT_BACKUP_DATA'))
