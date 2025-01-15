@@ -12,4 +12,4 @@ RUN crontab /etc/cron/crontab
 
 COPY . .
 
-ENTRYPOINT crond && python cron.py && python main.py
+ENTRYPOINT printenv > /etc/environment && crond && python cron.py && python main.py
