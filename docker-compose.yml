@@ -1,4 +1,12 @@
 services:
+    ofelia:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - scanner
+    command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   scanner:
     build: .
     environment:
@@ -11,6 +19,12 @@ services:
     volumes:
       - ${FTP_DATA}:/app/${FTP_DATA}
     restart: always
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.cleaning.schedule: "0 59 * * * *"
+      ofelia.job-exec.cleaning.command: "find /app/${FTP_DATA}* -type f -mtime +1 -delete"
+      ofelia.job-exec.bulletin-generation.schedule: "@hourly"
+      ofelia.job-exec.bulletin-generation.command: "/app/cron.py"
 
   ftp:
     build:
