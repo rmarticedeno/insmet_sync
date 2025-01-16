@@ -10,4 +10,4 @@ COPY . .
 
 RUN chmod +x cron.py
 
-ENTRYPOINT python cron.py && python main.py
+ENTRYPOINT python cron.py false && python main.py

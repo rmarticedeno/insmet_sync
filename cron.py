@@ -1,7 +1,6 @@
 #!/usr/local/bin/python
 
-import datetime, os
-from pathlib import Path
+import datetime, os, sys
 from src import JointReport, write_bulletin, get_safe_path
 
 now = datetime.datetime.now(datetime.timezone.utc)
@@ -17,8 +16,13 @@ name = f'WX.{hour[:2]}'
 
 path = get_safe_path(folder) / name
 
+
 if path.exists():
-    path.unlink()
+    # if file exists and any argument is provided, we should not try to regenerate the bulletin
+    if len(sys.argv) > 1:
+        exit()
+    else:
+        path.unlink()
 
 write_bulletin(path.absolute(), bulletin)
     
