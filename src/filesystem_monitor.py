@@ -2,7 +2,7 @@ import time, os, shutil
 from watchdog.observers.polling import PollingObserver 
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
-from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path, safe_file_move
+from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path, safe_file_move, safe_file_copy
 
 class EventHandler(FileSystemEventHandler):
 
@@ -35,12 +35,11 @@ class EventHandler(FileSystemEventHandler):
                 target.unlink()
                 write_bulletin(target.absolute(), bulletin)
 
+                safe_file_move(event.src_path, os.getenv('REPORT_BACKUP_DATA'))
+
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:
                     path = Path(os.getenv('DESTINATION_FOLDER')) / os.getenv('DESTINATION_FOLDER_NAME')
-                    path = get_safe_path(path.absolute())
-                    shutil.copy(target.absolute, path.absolute())
-
-                safe_file_move(event.src_path, os.getenv('REPORT_BACKUP_DATA'))
+                    safe_file_copy(target.absolute, path.absolute())
 
                 print(f"Bulletin {target.name} Updated with {report.name}")
             except Exception as e:

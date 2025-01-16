@@ -103,3 +103,7 @@ def get_safe_path(path):
 def safe_file_move(file_path, destination_path):
     path = get_safe_path(destination_path)
     shutil.move(file_path, path)
+
+def safe_file_copy(file_path, destination_path):
+    path = get_safe_path(destination_path)
+    shutil.copy(file_path, path)
