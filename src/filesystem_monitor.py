@@ -38,7 +38,7 @@ class EventHandler(FileSystemEventHandler):
                 safe_file_move(event.src_path, os.getenv('REPORT_BACKUP_DATA'))
 
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:     
-                    safe_file_copy(target.absolute, os.getenv('DESTINATION_FOLDER'))
+                    safe_file_copy(target.absolute(), os.getenv('DESTINATION_FOLDER'))
 
                 print(f"Bulletin {target.name} Updated with {report.name}")
             except Exception as e:
