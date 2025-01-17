@@ -102,8 +102,16 @@ def get_safe_path(path):
 
 def safe_file_move(file_path, destination_path):
     path = get_safe_path(destination_path)
+    path2 = Path(file_path)
+    destination = Path(destination_path) / path2.name
+    if destination.exists():
+        destination.unlink()
     shutil.move(file_path, path)
 
 def safe_file_copy(file_path, destination_path):
     path = get_safe_path(destination_path)
+    path2 = Path(file_path)
+    destination = Path(destination_path) / path2.name
+    if destination.exists():
+        destination.unlink()
     shutil.copy(file_path, path)
