@@ -18,8 +18,15 @@ def read_station_report(path):
     with open(path, 'r') as f:
         line = f.readline()
 
-        while not TERRESTIALREPORTID in line:
+        count = 0
+
+        while not TERRESTIALREPORTID in line and not TERRESTIALREPORTID.lower() in line:
             line = f.readline()
+            count += 1
+            if count == 20:
+                raise Exception("Could not parse report")
+            
+        count = 0
         dayandhour = line.split(' ')[-1]
         day = dayandhour[:2]
         hour = dayandhour[2:-2]
@@ -28,8 +35,11 @@ def read_station_report(path):
         station_id = line.strip().split(' ')[0]
         data = line.strip()
 
-        while not END_OF_REPORT in line:
+        while not END_OF_REPORT in line and not END_OF_REPORT.lower() in line:
             line = f.readline().strip()
+            count += 1
+            if count == 20:
+                raise Exception("Could not parse report")
             if len(line) > 0:
                 data += f'\n{line}'
 
