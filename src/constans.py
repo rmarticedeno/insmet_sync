@@ -60,7 +60,6 @@ ALL_STATIONS = {
     "78363": "La Gran Piedra",
     "78364": "Universidad de Oriente",
     "78365": "Cabo Lucrecia",
-    "78365": "Velasco",
     "78366": "Contramaestre",
     "78368": "Valle de Caujerí",
     "78369": "Punta de Maisí",
@@ -71,7 +70,8 @@ ALL_STATIONS = {
     "78374": "Tapaste",
     "78375": "Melena de Sur",
     "78376": "Bauta",
-    "78377": "Veguitas"
+    "78377": "Veguitas",
+    "78378": "Velasco"
     }
 
 OMM_STATIONS = [
