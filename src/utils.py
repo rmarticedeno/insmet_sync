@@ -93,6 +93,8 @@ def read_bulletin(path):
 
         # skip start of block
         f.readline()
+        # skip AAXX line
+        f.readline()
 
         result.national_stations = read_bulletin_stations(f)
 

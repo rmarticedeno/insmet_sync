@@ -24,6 +24,7 @@ class EventHandler(FileSystemEventHandler):
 
                 if not target.exists():
                     logger.error(f"Bulletin not found {target} while processing {report.name}")
+                    safe_file_move(event.src_path, os.getenv('INVALID_PROCESSED_REPORTS'))
                     return
                 
                 bulletin = read_bulletin(target.absolute())
