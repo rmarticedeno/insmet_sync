@@ -1,8 +1,10 @@
-import time, os, shutil
+import time, os, logging
 from watchdog.observers.polling import PollingObserver 
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
 from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path, safe_file_move, safe_file_copy
+
+logger = logging.getLogger(__name__)
 
 class EventHandler(FileSystemEventHandler):
 
@@ -21,14 +23,14 @@ class EventHandler(FileSystemEventHandler):
                 target = get_safe_path(bulletin_path) / f'WX.{hour}'
 
                 if not target.exists():
-                    print(f"Bulletin not found {target}")
+                    logger.error(f"Bulletin not found {target} while processing {report.name}")
                     return
                 
                 bulletin = read_bulletin(target.absolute())
             
                 if bulletin.month_day != station_report.day:
                     safe_file_move(event.src_path, os.getenv('INVALID_PROCESSED_REPORTS'))
-                    print(f"station report out of date, expected: {bulletin.month_day} recieved {station_report.day}")
+                    logger.error(f"station report out of date, expected: {bulletin.month_day} recieved {station_report.day} while processing {report.name}")
                     return
 
                 bulletin.update(station_report)
@@ -40,9 +42,9 @@ class EventHandler(FileSystemEventHandler):
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:     
                     safe_file_copy(target.absolute(), os.getenv('DESTINATION_FOLDER'))
 
-                print(f"Bulletin {target.name} Updated with {report.name}")
+                logger.info(f"Bulletin {target.name} Updated with {report.name}")
             except Exception as e:
-                print(f"An error ocurred during the processing of {report} report, {e}")
+                logger.error(f"An error ocurred during the processing of {report.name} report, {e}")
 
 class FileSystemWatcher:
 
