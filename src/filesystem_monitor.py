@@ -45,6 +45,7 @@ class EventHandler(FileSystemEventHandler):
                 logger.info(f"Bulletin {target.name} Updated with {report.name}")
             except Exception as e:
                 logger.error(f"An error ocurred during the processing of {report.name} report, {e}")
+                safe_file_move(event.src_path, os.getenv('INVALID_PROCESSED_REPORTS'))
 
 class FileSystemWatcher:
 
