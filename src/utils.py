@@ -24,7 +24,7 @@ def read_station_report(path):
             line = f.readline()
             count += 1
             if count == 20:
-                raise Exception("Could not parse report")
+                raise Exception("Could not parse report. AAXX not found after 20 lines")
             
         count = 0
         dayandhour = line.split(' ')[-1]
@@ -32,6 +32,13 @@ def read_station_report(path):
         hour = dayandhour[2:-2]
 
         line = f.readline()
+
+        while not len(line.strip()) > 0:
+            line = f.readline().strip()
+            count += 1
+            if count == 20:
+                raise Exception("Could not parse report. Too many empty lines between AAXX and data")
+
         station_id = line.strip().split(' ')[0]
         data = line.strip()
 
@@ -39,7 +46,7 @@ def read_station_report(path):
             line = f.readline().strip()
             count += 1
             if count == 20:
-                raise Exception("Could not parse report")
+                raise Exception("Could not parse report. End of report character (=) not found")
             if len(line) > 0:
                 data += f'\n{line}'
 
