@@ -1,4 +1,4 @@
-import time, os, logging
+import time, os, logging, time
 from watchdog.observers.polling import PollingObserver 
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 class EventHandler(FileSystemEventHandler):
 
     def on_created(self, event):
+        # avoid fast reading
+        time.sleep(5)
         if not event.is_directory:
             try:
                 # for testing purposes ignore WX files
