@@ -1,8 +1,10 @@
-import re, shutil
+import re, shutil, logging
 from pathlib import Path
 from .constans import END_OF_MESSAGE, NEWMESSAGEHEADER, TERRESTIALREPORTID, END_OF_REPORT
 from .joint_report import JointReport
 from .station_report import StationReport
+
+logger = logging.getLogger(__name__)
 
 def get_oneline_message(path: str):
     with open(path, 'r') as f:
@@ -120,17 +122,23 @@ def get_safe_path(path):
     return _path
 
 def safe_file_move(file_path, destination_path):
-    path = get_safe_path(destination_path)
-    path2 = Path(file_path)
-    destination = Path(destination_path) / path2.name
-    if destination.exists():
-        destination.unlink()
-    shutil.move(file_path, path)
+    try:
+        path = get_safe_path(destination_path)
+        path2 = Path(file_path)
+        destination = Path(destination_path) / path2.name
+        if destination.exists():
+            destination.unlink()
+        shutil.move(file_path, path)
+    except Exception as e:
+        logging.error(f"An error ocurred during the movement of {file_path} to {destination_path} with error {e}")
 
 def safe_file_copy(file_path, destination_path):
-    path = get_safe_path(destination_path)
-    path2 = Path(file_path)
-    destination = Path(destination_path) / path2.name
-    if destination.exists():
-        destination.unlink()
-    shutil.copy(file_path, path)
+    try:
+        path = get_safe_path(destination_path)
+        path2 = Path(file_path)
+        destination = Path(destination_path) / path2.name
+        if destination.exists():
+            destination.unlink()
+        shutil.copy(file_path, path)
+    except Exception as e:
+        logging.error(f"An error ocurred during the copy of {file_path} to {destination_path} with error {e}")
