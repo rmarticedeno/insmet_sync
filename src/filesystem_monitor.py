@@ -40,7 +40,7 @@ class EventHandler(FileSystemEventHandler):
                 target.unlink()
                 write_bulletin(target.absolute(), bulletin)
                 
-                safe_file_move(target.absolute(), os.getenv('BULLETIN_DATA'))
+                safe_file_copy(target.absolute(), os.getenv('BULLETIN_DATA'))
                 safe_file_move(event.src_path, os.getenv('REPORT_BACKUP_DATA'))
 
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:     
