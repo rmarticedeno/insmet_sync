@@ -22,7 +22,7 @@ services:
       DESTINATION_FOLDER: ${DESTINATION_FOLDER}
       PROCESSING_FOLDER: ${PROCESSING_FOLDER}
     volumes:
-      - ${FTP_DATA}:/app/${FTP_DATA}
+      - ${BASE_FOLDER}:/app/${BASE_FOLDER}
     restart: always
     labels:
       ofelia.enabled: "true"
