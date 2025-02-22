@@ -21,7 +21,7 @@ class EventHandler(FileSystemEventHandler):
                 station_report = read_station_report(report.absolute())
                 hour = station_report.hour
 
-                bulletin_path = os.getenv('BULLETIN_DATA') or '.'
+                bulletin_path = os.getenv('PROCESSING_FOLDER') or '.'
                 target = get_safe_path(bulletin_path) / f'WX.{hour}'
 
                 if not target.exists():
@@ -39,7 +39,8 @@ class EventHandler(FileSystemEventHandler):
                 bulletin.update(station_report)
                 target.unlink()
                 write_bulletin(target.absolute(), bulletin)
-
+                
+                safe_file_move(target.absolute(), os.getenv('BULLETIN_DATA'))
                 safe_file_move(event.src_path, os.getenv('REPORT_BACKUP_DATA'))
 
                 if len(os.getenv('DESTINATION_FOLDER') or "") > 0:     

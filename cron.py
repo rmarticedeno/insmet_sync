@@ -10,7 +10,7 @@ hour = now.strftime("%H") + '00'
 
 bulletin = JointReport(month_day=day_of_month, hour=hour)
 
-folder = os.getenv('BULLETIN_DATA') or '.'
+folder = os.getenv('PROCESSING_FOLDER') or '.'
 
 name = f'WX.{hour[:2]}'
 

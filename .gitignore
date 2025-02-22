@@ -1,5 +1,5 @@
 # ignore local file for ftp data
-ftpdata/
+localdata/
 
 # ignore local file for db data
 pgdata/
