@@ -4,6 +4,7 @@ TERRESTIALREPORTID = "AAXX"
 NEWMESSAGEHEADER = "ZCZC"
 
 ALL_STATIONS = {
+    "78156": "Mariel",
     "78308": "La Piedra",
     "78309": "Punta del Este",
     "78310": "Cabo San Antonio",
