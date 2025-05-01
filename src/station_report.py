@@ -18,4 +18,4 @@ class StationReport:
     def get_full_msg(self):
         if self.message is None:
             return str(self)
-        return f"{TERRESTIALREPORTID} {self.day}{self.hour}00 {self.message}"
+        return f"{TERRESTIALREPORTID} {self.day}{self.hour}1 {self.message}"

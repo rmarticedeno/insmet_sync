@@ -49,7 +49,7 @@ class EventHandler(FileSystemEventHandler):
 
                 logger.info(f"Bulletin {target.name} Updated with {report.name}")
 
-                db_upload(str(station_report))
+                db_upload(station_report.get_full_msg())
 
                 logger.info(f"DB updated with {report.name}")
             except Exception as e:
