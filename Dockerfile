@@ -2,6 +2,8 @@ FROM python:3.13-alpine
 
 WORKDIR /app
 
+RUN apk add curl gpg g++ unixodbc-dev
+
 COPY install_driver.sh .
 
 RUN chmod +x install_driver.sh && ./install_driver.sh
