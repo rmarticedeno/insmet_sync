@@ -18,41 +18,42 @@ def get_oneline_message(path: str):
 
 def read_station_report(path):
     with open(path, 'r') as f:
-        line = f.readline()
+        data = f.read()
+        
+        msg = " ".join(data.split())             # quito los espacios múltiples, saltos de línea, etc
+        valid = False
 
-        count = 0
-
-        while not TERRESTIALREPORTID in line and not TERRESTIALREPORTID.lower() in line:
-            line = f.readline()
-            count += 1
-            if count == 20:
-                raise Exception("Could not parse report. AAXX not found after 20 lines")
+        index = msg.find(TERRESTIALREPORTID)                # verifico que el fichero es un mensaje FM12 SYNOP
+        if index != -1:
+            msg = msg[index:]
+            valid = True     
+        
+        index = msg.find(TERRESTIALREPORTID.lower())                # verifico que el fichero es un mensaje FM12 SYNOP
+        if not valid and index != -1:
+            msg = msg[index:]
+            valid = True                 # quito todo lo que está antes de 'AAXX'
             
-        count = 0
-        dayandhour = line.split(' ')[-1]
-        day = dayandhour[:2]
-        hour = dayandhour[2:-2]
+        if valid:
+            day = msg[5:7]              # día de la observación
+            hour = msg[7:9]
+            station_id = msg.split(' ')[1]
 
-        line = f.readline()
+    
+            index = msg.find(END_OF_REPORT)
+            if index != -1:
+                msg = msg[:index]        # encontré el signo '=', quito las cadenas que hayan a continuación porque no pertenecen al código FM12 SYNOP
+            else:                               # no encontré el signo '=', hay un error no fatal y busco la cadena 'NNNN' de fin de mensaje por si faltó el signo '='
+                index = msg.find(END_OF_MESSAGE)
+                if index != -1:
+                    msg = msg[:index]  # encontré la cadena 'NNNN', quito las cadenas que hayan a continuación porque no pertenecen al código FM12 SYNOP
 
-        while not len(line.strip()) > 0:
-            line = f.readline().strip()
-            count += 1
-            if count == 20:
-                raise Exception("Could not parse report. Too many empty lines between AAXX and data")
+            msg = msg[11:]                      # quito los grupos AAXX YYGGiw al mensaje
+            msg = msg + '='                     # agrego '=' al final para cumplir el formato de bloque
+            msg = msg.replace(' =', '=')        # quito el espacio delante del signo '='
 
-        station_id = line.strip().split(' ')[0]
-        data = line.strip()
-
-        while not END_OF_REPORT in line and not END_OF_REPORT.lower() in line:
-            line = f.readline().strip()
-            count += 1
-            if count == 20:
-                raise Exception("Could not parse report. End of report character (=) not found")
-            if len(line) > 0:
-                data += f'\n{line}'
-
-        return StationReport(station_id, data, day, hour)
+            return StationReport(station_id, msg, day, hour)
+        
+        raise Exception(f"{TERRESTIALREPORTID} not found")
 
 def read_bulletin_stations(f):
     stations = []

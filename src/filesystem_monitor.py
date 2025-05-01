@@ -3,6 +3,7 @@ from watchdog.observers.polling import PollingObserver
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
 from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path, safe_file_move, safe_file_copy
+from .format_message import db_upload
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,10 @@ class EventHandler(FileSystemEventHandler):
                     safe_file_copy(target.absolute(), os.getenv('DESTINATION_FOLDER'))
 
                 logger.info(f"Bulletin {target.name} Updated with {report.name}")
+
+                db_upload(station_report.get_full_msg())
+
+                logger.info(f"DB updated with {report.name}")
             except Exception as e:
                 logger.error(f"An error ocurred during the processing of {report.name} report, {e}")
                 safe_file_move(event.src_path, os.getenv('INVALID_PROCESSED_REPORTS'))

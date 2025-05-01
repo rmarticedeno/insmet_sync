@@ -1,4 +1,5 @@
 import datetime
+from .constans import TERRESTIALREPORTID
 
 class StationReport:
 
@@ -13,3 +14,8 @@ class StationReport:
         if self.message is None:
             return f"{self.id} nil="
         return self.message
+    
+    def get_full_msg(self):
+        if self.message is None:
+            return str(self)
+        return f"{TERRESTIALREPORTID} {self.day}{self.hour}00 {self.message}"
