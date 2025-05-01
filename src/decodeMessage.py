@@ -1,5 +1,5 @@
 from pymetdecoder import synop as s
-import metCalc
+from .metCalc import *
 from datetime import datetime as dt, timedelta
 
 def decodeMessage(msg):
@@ -135,9 +135,9 @@ def decodeMessage(msg):
     if (air_temperature_missing == False and dewpoint_temperature_missing == False):
         if station_pressure_missing == True:
             station_pressure = 1013.2
-        saturation_vapor_pressure = metCalc.find_esat(air_temperature, station_pressure)
-        vapor_pressure = metCalc.find_evapor_tdew(dewpoint_temperature)
-        relative_humidity = round(metCalc.find_hr(vapor_pressure, saturation_vapor_pressure))
+        saturation_vapor_pressure = find_esat(air_temperature, station_pressure)
+        vapor_pressure = find_evapor_tdew(dewpoint_temperature)
+        relative_humidity = round(find_hr(vapor_pressure, saturation_vapor_pressure))
         result['relative_humidity'] = round(relative_humidity)
         if (relative_humidity < 10 or relative_humidity > 100):
             result['relative_humidity_flag'] = 6
@@ -145,7 +145,7 @@ def decodeMessage(msg):
             result['relative_humidity_flag'] = 0
         saturation_deficit = round(saturation_vapor_pressure - vapor_pressure, 1)
         result['saturation_deficit'] = saturation_deficit
-        heat_index = round(metCalc.find_heat_index(air_temperature, relative_humidity), 1)
+        heat_index = round(find_heat_index(air_temperature, relative_humidity), 1)
         result['heat_index'] = heat_index
     else:
         result.update(relative_humidity=None, relative_humidity_flag=None, saturation_deficit=None, heat_index=None)
