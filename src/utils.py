@@ -36,8 +36,7 @@ def read_station_report(path):
         if valid:
             day = msg[5:7]              # día de la observación
             hour = msg[7:9]
-            station_id = msg.split(' ')[1]
-
+            station_id = msg.split(' ')[2]
     
             index = msg.find(END_OF_REPORT)
             if index != -1:
