@@ -23,7 +23,7 @@ def db_upload(msg):
             with pyodbc.connect(connstring) as conn:
                 with conn.cursor() as cursor:
                     basequeryUpdate = ', '.join([f'{x} = ?' for x in  msg_decoded.keys()])  
-                    queryUpdate =  f'UPDATE {table} SET {basequeryUpdate}'
+                    queryUpdate =  f"UPDATE {table} SET {basequeryUpdate} WHERE obs_time = '{time}' AND station_id = '{station_id}'"
 
                     queryAdd =  f'INSERT INTO {table} ({columns}) VALUES ({placeholders})'
                     querySelect = f"SELECT * FROM {table} WHERE obs_time = '{time}' AND station_id = '{station_id}'"
