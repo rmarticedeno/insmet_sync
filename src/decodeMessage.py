@@ -1,6 +1,6 @@
 from pymetdecoder import synop as s
 from .metCalc import *
-from datetime import datetime as dt, timedelta
+from datetime import datetime, timedelta, timezone
 
 def decodeMessage(msg):
     result = {}
@@ -25,15 +25,13 @@ def decodeMessage(msg):
     else:
         minimum_temperature_period = None
         maximum_temperature_period = None
-    now = dt.now()
-    now = now + timedelta(hours=5)
+    now = datetime.now(timezone.utc)
     try:
         obs_time_hour_exact = msg_decoded['exact_obs_time']['hour']['value']
         obs_time_minute_exact = msg_decoded['exact_obs_time']['minute']['value']
-        local_time = dt(now.year, now.month, obs_time_day, obs_time_hour_exact, obs_time_minute_exact, 0, 0)
+        local_time = datetime(now.year, now.month, obs_time_day, obs_time_hour_exact, obs_time_minute_exact, 0, 0)
     except Exception:
-        local_time = dt(now.year, now.month, obs_time_day, obs_time_hour, 0, 0, 0)
-    local_time = local_time + timedelta(hours=-5)
+        local_time = datetime(now.year, now.month, obs_time_day, obs_time_hour, 0, 0, 0)
     if (now.month > 5 and now.month < 12):
         cyclone_season = True
     else:
