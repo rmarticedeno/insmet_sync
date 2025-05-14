@@ -1,7 +1,7 @@
 from pymetdecoder import synop as s
 from .metCalc import *
 from datetime import datetime, timedelta, timezone
-from dateutil import tz
+from zoneinfo import ZoneInfo
 
 def decodeMessage(msg):
     result = {}
@@ -33,7 +33,7 @@ def decodeMessage(msg):
         local_time = datetime(now.year, now.month, obs_time_day, obs_time_hour_exact, obs_time_minute_exact, 0, 0)
     except Exception:
         local_time = datetime(now.year, now.month, obs_time_day, obs_time_hour, 0, 0, 0)
-    local_time.astimezone(tz.gettz('America/Havana'))
+    local_time.astimezone(ZoneInfo('America/Havana'))
     if (now.month > 5 and now.month < 12):
         cyclone_season = True
     else:
