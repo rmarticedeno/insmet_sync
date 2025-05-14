@@ -1,6 +1,7 @@
 from pymetdecoder import synop as s
 from .metCalc import *
 from datetime import datetime, timedelta, timezone
+from dateutil import tz
 
 def decodeMessage(msg):
     result = {}
@@ -32,6 +33,7 @@ def decodeMessage(msg):
         local_time = datetime(now.year, now.month, obs_time_day, obs_time_hour_exact, obs_time_minute_exact, 0, 0)
     except Exception:
         local_time = datetime(now.year, now.month, obs_time_day, obs_time_hour, 0, 0, 0)
+    local_time.astimezone(tz.gettz('America/Havana'))
     if (now.month > 5 and now.month < 12):
         cyclone_season = True
     else:
@@ -97,8 +99,14 @@ def decodeMessage(msg):
 
     try:
         result['sea_level_pressure'] = msg_decoded['sea_level_pressure']['value']
+        result.update(geopotential_surface=None, geopotential_height=None)
     except Exception:
         result['sea_level_pressure'] = None
+        try:
+            result['geopotential_surface'] = msg_decoded['geopotential']['surface']['value']
+            result['geopotential_height'] = msg_decoded['geopotential']['height']['value']
+        except:
+            result.update(geopotential_surface=None, geopotential_height=None)
 
     try:
         pressure_tendency = msg_decoded['pressure_tendency']['tendency']['value']
@@ -189,7 +197,10 @@ def decodeMessage(msg):
             else:
                 result['precipitation_24h_flag'] = 0
         except Exception:
-            result.update(precipitation_24h=None, precipitation_24h_trace=None, precipitation_24h_flag=None)
+            if (obs_time_hour % 6 == 0 and precipitation_indicator == 3):   # No hubo lluvia en las últimas 6 horas y se omitió el grupo 7R24R24R24R24R24
+                result.update(precipitation_24h=0, precipitation_24h_trace=0, precipitation_24h_flag=0)
+            else:                                                           # Hubo lluvia en las últimas 6 horas y se omitió el grupo 7R24R24R24R24R24
+                result.update(precipitation_24h=None, precipitation_24h_trace=None, precipitation_24h_flag=None)
 
     try:
         surface_wind_speed = msg_decoded['surface_wind']['speed']['value']
