@@ -26,15 +26,15 @@ def decodeMessage(msg):
     else:
         minimum_temperature_period = None
         maximum_temperature_period = None
-    now = datetime.now(timezone.utc)
     try:
-        obs_time_hour_exact = msg_decoded['exact_obs_time']['hour']['value']
-        obs_time_minute_exact = msg_decoded['exact_obs_time']['minute']['value']
-        local_time = datetime(now.year, now.month, obs_time_day, obs_time_hour_exact, obs_time_minute_exact, 0, 0)
+        obs_time_hour = msg_decoded['exact_obs_time']['hour']['value']
+        obs_time_minute = msg_decoded['exact_obs_time']['minute']['value']
     except Exception:
-        local_time = datetime(now.year, now.month, obs_time_day, obs_time_hour, 0, 0, 0)
-    local_time.astimezone(ZoneInfo('America/Havana'))
-    if (now.month > 5 and now.month < 12):
+        obs_time_minute = 0
+    utc_time = datetime.now(tz=ZoneInfo("UTC"))
+    utc_obs_time = datetime(utc_time.year, utc_time.month, obs_time_day, obs_time_hour, obs_time_minute, 0, 0)
+    local_time = utc_obs_time + timedelta(hours=-5)
+    if (local_time.month > 5 and local_time.month < 12):
         cyclone_season = True
     else:
         cyclone_season = False
@@ -197,7 +197,7 @@ def decodeMessage(msg):
             else:
                 result['precipitation_24h_flag'] = 0
         except Exception:
-            if (obs_time_hour % 6 == 0 and precipitation_indicator == 3):   # No hubo lluvia en las últimas 6 horas y se omitió el grupo 7R24R24R24R24R24
+            if (obs_time_hour % 6 == 0 and precipitation_amount_s1 == 0):   # No hubo lluvia en las últimas 6 horas y se omitió el grupo 7R24R24R24R24R24
                 result.update(precipitation_24h=0, precipitation_24h_trace=0, precipitation_24h_flag=0)
             else:                                                           # Hubo lluvia en las últimas 6 horas y se omitió el grupo 7R24R24R24R24R24
                 result.update(precipitation_24h=None, precipitation_24h_trace=None, precipitation_24h_flag=None)
