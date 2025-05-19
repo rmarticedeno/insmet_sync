@@ -172,35 +172,34 @@ def decodeMessage(msg):
             result['precipitation_s3_period'] = msg_decoded['precipitation_s3']['time_before_obs']['value']
         except Exception:
             if obs_time_hour % 3 == 0:
-                result.update(precipitation_s3=0, precipitation_s3_trace=None, precipitation_s3_flag=None, precipitation_s3_period=3)
+                result.update(precipitation_s3=0, precipitation_s3_trace=0, precipitation_s3_flag=0, precipitation_s3_period=3)
             else:
-                result.update(precipitation_s3=0, precipitation_s3_trace=None, precipitation_s3_flag=None, precipitation_s3_period=1)                    
-
-        try:
-            precipitation_amount_s1 = msg_decoded['precipitation_s1']['amount']['value']
-            result['precipitation_s1'] = precipitation_amount_s1
-            result['precipitation_s1_trace'] = msg_decoded['precipitation_s1']['amount']['trace']
-            if precipitation_amount_s1 > 400:
-                result['precipitation_s1_flag'] = 6
-            else:
-                result['precipitation_s1_flag'] = 0
-            result['precipitation_s1_period'] = msg_decoded['precipitation_s1']['time_before_obs']['value']
-        except Exception:
-            result.update(precipitation_s1=0, precipitation_s1_trace=None, precipitation_s1_flag=None, precipitation_s1_period=6)
-
-        try:
-            precipitation_amount_24h = msg_decoded['precipitation_24h']['amount']['value']
-            result['precipitation_24h'] = precipitation_amount_24h
-            result['precipitation_24h_trace'] = msg_decoded['precipitation_s1']['amount']['trace']
-            if precipitation_amount_24h > 500:
-                result['precipitation_24h_flag'] = 6
-            else:
-                result['precipitation_24h_flag'] = 0
-        except Exception:
-            if (obs_time_hour % 6 == 0 and precipitation_amount_s1 == 0):   # No hubo lluvia en las últimas 6 horas y se omitió el grupo 7R24R24R24R24R24
+                result.update(precipitation_s3=0, precipitation_s3_trace=0, precipitation_s3_flag=0, precipitation_s3_period=1)
+        if obs_time_hour % 6 == 0:
+            try:
+                precipitation_amount_s1 = msg_decoded['precipitation_s1']['amount']['value']
+                result['precipitation_s1'] = precipitation_amount_s1
+                result['precipitation_s1_trace'] = msg_decoded['precipitation_s1']['amount']['trace']
+                if precipitation_amount_s1 > 400:
+                    result['precipitation_s1_flag'] = 6
+                else:
+                    result['precipitation_s1_flag'] = 0
+                result['precipitation_s1_period'] = msg_decoded['precipitation_s1']['time_before_obs']['value']
+            except Exception:
+                result.update(precipitation_s1=0, precipitation_s1_trace=0, precipitation_s1_flag=0, precipitation_s1_period=6)
+            try:
+                precipitation_amount_24h = msg_decoded['precipitation_24h']['amount']['value']
+                result['precipitation_24h'] = precipitation_amount_24h
+                result['precipitation_24h_trace'] = msg_decoded['precipitation_24h']['amount']['trace']
+                if precipitation_amount_24h > 500:
+                    result['precipitation_24h_flag'] = 6
+                else:
+                    result['precipitation_24h_flag'] = 0
+            except Exception:
                 result.update(precipitation_24h=0, precipitation_24h_trace=0, precipitation_24h_flag=0)
-            else:                                                           # Hubo lluvia en las últimas 6 horas y se omitió el grupo 7R24R24R24R24R24
-                result.update(precipitation_24h=None, precipitation_24h_trace=None, precipitation_24h_flag=None)
+        else:
+            result.update(precipitation_s1=None, precipitation_s1_trace=None, precipitation_s1_flag=None, precipitation_s1_period=None)
+            result.update(precipitation_24h=None, precipitation_24h_trace=None, precipitation_24h_flag=None)
 
     try:
         surface_wind_speed = msg_decoded['surface_wind']['speed']['value']
