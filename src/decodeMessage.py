@@ -244,7 +244,13 @@ def decodeMessage(msg):
         else:
             result['highest_gust_speed_flag'] = 0
             try:
-                result['highest_gust_direction'] = msg_decoded['highest_gust'][0]['direction']['value']
+                highest_gust_direction_position = msg.rindex('915')
+                if highest_gust_direction_position > msg.rindex(' 333 '):
+                    highest_gust_direction_group = msg[highest_gust_direction_position:highest_gust_direction_position + 6]
+                    highest_gust_direction = 10 * int(highest_gust_direction_group[4:6])
+                    result['highest_gust_direction'] = highest_gust_direction
+                else:
+                    result['highest_gust_direction'] = None
             except Exception:
                 result['highest_gust_direction'] = None
             try:    # este grupo no está implementado en el pymetdecoder
