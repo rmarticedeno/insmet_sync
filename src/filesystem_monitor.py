@@ -1,9 +1,10 @@
-import time, os, logging, time
+import time, os, logging, time, datetime
 from watchdog.observers.polling import PollingObserver 
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
 from .utils import read_bulletin, read_station_report, write_bulletin, get_safe_path, safe_file_move, safe_file_copy
 from .format_message import db_upload
+from .joint_report import JointReport
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +27,12 @@ class EventHandler(FileSystemEventHandler):
                 target = get_safe_path(bulletin_path) / f'WX.{hour}'
 
                 if not target.exists():
-                    logger.error(f"Bulletin not found {target} while processing {report.name}")
-                    safe_file_move(event.src_path, os.getenv('INVALID_PROCESSED_REPORTS'))
+                    logger.info(f"Bulletin not found {target} while processing {report.name}")
+                    day_of_month = datetime.datetime.now(datetime.timezone.utc).strftime("%d")
+
+                    bulletin = JointReport(month_day=day_of_month, hour=hour)
+                    write_bulletin(target, bulletin)
+                    #safe_file_move(event.src_path, os.getenv('INVALID_PROCESSED_REPORTS'))
                     return
                 
                 bulletin = read_bulletin(target.absolute())
