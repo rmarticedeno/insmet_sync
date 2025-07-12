@@ -1,0 +1,23 @@
+name: Send Notification To Telegram
+on:
+  push:
+    branches:
+    - deployment
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repository
+        uses: actions/checkout@v4
+        with:
+            ref: deployment
+      - name: Send Notification
+        shell: bash
+        env:
+            chat_id: ${{ secrets.CHAT_ID }}
+            bot_id: ${{ secrets.BOT_ID }}
+            topic_id: ${{ secrets.TOPIC_ID }}
+        run: |
+            curl -d chat_id=$chat_id -d text="test msg from curl"  https://api.telegram.org/bot$bot_id/sendMessage?message_thread_id=$topic_id
