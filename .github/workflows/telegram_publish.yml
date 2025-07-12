@@ -20,5 +20,5 @@ jobs:
             BOT_ID: ${{ secrets.BOT_ID }}
         run: |
             curl -d chat_id=${CHAT_ID} \
-            -d text="Project: ${{ github.event.repository.name }}\nNew Commit: ${{ github.sha }}\nBranch: ${{ github.head_ref }}\nMessage: ${{ github.event.head_commit.message }}" \
+            -d text=$"Project: ${{ github.event.repository.name }}\nNew Commit: ${{ github.sha }}\nBranch: ${{ github.head_ref }}\nMessage: ${{ github.event.head_commit.message }}" \
             https://api.telegram.org/bot${BOT_ID}/sendMessage
