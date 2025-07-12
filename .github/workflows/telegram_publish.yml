@@ -20,4 +20,4 @@ jobs:
             BOT_ID: ${{ secrets.BOT_ID }}
             TOPIC_ID: ${{ secrets.TOPIC_ID }}
         run: |
-            curl -d chat_id=${CHAT_ID} -d text="test msg from curl"  https://api.telegram.org/bot${BOT_ID}/sendMessage?message_thread_id=${TOPIC_ID}
+            curl -d chat_id=${CHAT_ID} -d text="New commit from ${{ github.event.repository.name }}"  https://api.telegram.org/bot${BOT_ID}/sendMessage?message_thread_id=${TOPIC_ID}
