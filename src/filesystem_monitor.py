@@ -22,13 +22,14 @@ class EventHandler(FileSystemEventHandler):
                 report = Path(event.src_path)
                 station_report = read_station_report(report.absolute())
                 hour = station_report.hour
+                day_of_month = datetime.datetime.now(datetime.timezone.utc).strftime("%d")
 
                 bulletin_path = os.getenv('PROCESSING_FOLDER') or '.'
                 target = get_safe_path(bulletin_path) / f'WX.{hour}'
 
                 if not target.exists():
                     logger.info(f"Bulletin not found {target} while processing {report.name}")
-                    day_of_month = datetime.datetime.now(datetime.timezone.utc).strftime("%d")
+                    
 
                     bulletin = JointReport(month_day=day_of_month, hour=hour)
                     write_bulletin(target, bulletin)
@@ -36,6 +37,12 @@ class EventHandler(FileSystemEventHandler):
                     return
                 
                 bulletin = read_bulletin(target.absolute())
+
+                if bulletin.month_day != day_of_month:
+                    target.unlink()
+                    bulletin = JointReport(month_day=day_of_month, hour=hour)
+                    write_bulletin(target, bulletin)
+                    bulletin = read_bulletin(target.absolute())
             
                 if bulletin.month_day != station_report.day:
                     safe_file_move(event.src_path, os.getenv('INVALID_PROCESSED_REPORTS'))
