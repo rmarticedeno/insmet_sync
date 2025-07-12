@@ -76,16 +76,23 @@ class FileSystemWatcher:
         self.path = path
 
     def main_loop(self):
-        event_handler = EventHandler()
-        self.watcher.schedule(event_handler, self.path)
-        self.watcher.daemon = True
-        self.watcher.start()
-        try:
-            while True:
-                time.sleep(5)
-        except:
-            self.watcher.stop()
-            print("Watcher Stopped")
+        count = 0
+        while True:
+            event_handler = EventHandler()
+            self.watcher.schedule(event_handler, self.path)
+            self.watcher.daemon = True
+            self.watcher.start()
+            try:
+                while True:
+                    time.sleep(5)
+            except Exception as e:
+                self.watcher.stop()
+                time.sleep(2**count * 10)
+                logger.error(f"Watcher Stopped with error{e}")
+                count +=1
+            finally:
+                if count == 5:
+                    break
         
 
 
