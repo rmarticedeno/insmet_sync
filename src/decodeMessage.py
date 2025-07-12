@@ -480,6 +480,8 @@ def decodeMessage(msg):
                 sea_state_group = msg[sea_state_position:sea_state_position + 6]
                 result['sea_state'] = sea_state_group[3:4]
                 result['wind_speed'] = 10 + int(sea_state_group[4:5])
+                if result['wind_speed'] > 12:
+                    result['wind_speed'] = 13                
             else:
                 result.update(sea_state=None, wind_speed=None)
         except ValueError:
