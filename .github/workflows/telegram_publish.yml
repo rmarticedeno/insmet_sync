@@ -16,8 +16,8 @@ jobs:
       - name: Send Notification
         shell: bash
         env:
-            chat_id: ${{ secrets.CHAT_ID }}
-            bot_id: ${{ secrets.BOT_ID }}
-            topic_id: ${{ secrets.TOPIC_ID }}
+            CHAT_ID: ${{ secrets.CHAT_ID }}
+            BOT_ID: ${{ secrets.BOT_ID }}
+            TOPIC_ID: ${{ secrets.TOPIC_ID }}
         run: |
-            curl -d chat_id=$chat_id -d text="test msg from curl"  https://api.telegram.org/bot$bot_id/sendMessage?message_thread_id=$topic_id
+            curl -d chat_id=${CHAT_ID} -d text="test msg from curl"  https://api.telegram.org/bot${BOT_ID}/sendMessage?message_thread_id=${TOPIC_ID}
