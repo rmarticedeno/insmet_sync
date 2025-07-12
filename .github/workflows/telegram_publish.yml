@@ -18,6 +18,7 @@ jobs:
         env:
             CHAT_ID: ${{ secrets.CHAT_ID }}
             BOT_ID: ${{ secrets.BOT_ID }}
-            TOPIC_ID: ${{ secrets.TOPIC_ID }}
         run: |
-            curl -d chat_id=${CHAT_ID} -d text="New commit from ${{ github.event.repository.name }}"  https://api.telegram.org/bot${BOT_ID}/sendMessage?message_thread_id=${TOPIC_ID}
+            curl -d chat_id=${CHAT_ID} \
+            -d text="Project: ${{ github.event.repository.name }}\nNew Commit: ${{ github.sha }}\nBranch: ${{ github.head_ref }}\nMessage: ${{ github.event.head_commit.message }}" \
+            https://api.telegram.org/bot${BOT_ID}/sendMessage
