@@ -1,7 +1,55 @@
 from pymetdecoder import synop as s
 from .metCalc import *
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+import calendar
 from zoneinfo import ZoneInfo
+
+def get_utc_obs_time(obs_day, obs_hour, obs_minute=0):
+    """
+    Calculate the correct UTC observation time for a given day, hour, and minute,
+    handling delayed reports from previous months.
+    
+    Args:
+        obs_day (int): Day of the month (1-31)
+        obs_hour (int): Hour of observation in UTC (0-23)
+        obs_minute (int): Minute of observation in UTC (0-59), defaults to 0
+        
+    Returns:
+        datetime: Corrected UTC datetime
+    """
+    # Get current UTC time
+    current_utc = datetime.now(tz=ZoneInfo("UTC"))
+    
+    # Start with current month/year
+    year = current_utc.year
+    month = current_utc.month
+    candidate = None
+    
+    # Try up to 13 months back (12 months + current)
+    for _ in range(13):
+        # Get the last day of the candidate month
+        last_day = calendar.monthrange(year, month)[1]
+        day = min(obs_day, last_day)  # Ensure valid day for month
+        
+        try:
+            # Create candidate in UTC
+            candidate = datetime(year, month, day, obs_hour, obs_minute, tzinfo=ZoneInfo("UTC"))
+            
+            # Check if candidate is not in the future
+            if candidate <= current_utc:
+                return candidate
+        except ValueError:
+            # Skip invalid dates (shouldn't happen with day clamping)
+            pass
+        
+        # Move to previous month
+        month -= 1
+        if month == 0:
+            month = 12
+            year -= 1
+    
+    # Fallback: use the last valid candidate (should be 13 months old)
+    return candidate
 
 def decodeMessage(msg):
     result = {}
@@ -31,8 +79,8 @@ def decodeMessage(msg):
         obs_time_minute = msg_decoded['exact_obs_time']['minute']['value']
     except Exception:
         obs_time_minute = 0
-    utc_time = datetime.now(tz=ZoneInfo("UTC"))
-    utc_obs_time = datetime(utc_time.year, utc_time.month, obs_time_day, obs_time_hour, obs_time_minute, 0, 0)
+
+    utc_obs_time = get_utc_obs_time(obs_time_day, obs_time_hour, obs_time_minute)
     local_time = utc_obs_time + timedelta(hours=-5)
     if (local_time.month > 5 and local_time.month < 12):
         cyclone_season = True
