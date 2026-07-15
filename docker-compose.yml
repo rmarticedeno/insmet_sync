@@ -24,6 +24,7 @@ services:
       DB_QUERY_TIMEOUT_SECONDS: ${DB_QUERY_TIMEOUT_SECONDS:-30}
     volumes:
       - ${DATA_ROOT:-./localdata}:/data
+      - ${FTP_HOST_PATH:-./localdata/ftp}:/data/ftp
     restart: always
 
   ftp:
@@ -47,7 +48,7 @@ services:
       - "${FTP_MIN_PORT}-${FTP_MAX_PORT}:${FTP_MIN_PORT}-${FTP_MAX_PORT}"
       - "990:990"
     volumes:
-      - ${DATA_ROOT:-./localdata}/ftp:/home/vsftpd/${FTP_USER}
+      - ${FTP_HOST_PATH:-./localdata/ftp}:/home/vsftpd/${FTP_USER}
     restart: always
 
   scheduler:
@@ -75,4 +76,5 @@ services:
       CLEANUP_JOB_TIMEOUT_SECONDS: ${CLEANUP_JOB_TIMEOUT_SECONDS:-45}
     volumes:
       - ${DATA_ROOT:-./localdata}:/data
+      - ${FTP_HOST_PATH:-./localdata/ftp}:/data/ftp
     restart: always
