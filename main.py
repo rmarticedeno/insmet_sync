@@ -1,5 +1,7 @@
-import os, logging
+import logging
+
 from src import FileSystemWatcher
+from src.runtime_config import AppConfig
 
 logging.basicConfig(
     level=logging.INFO,
@@ -10,5 +12,7 @@ logging.basicConfig(
     ]
 )
 
-watch = FileSystemWatcher(os.getenv('REPORT_DATA') or '.')
+config = AppConfig.from_env()
+config.ensure_directories()
+watch = FileSystemWatcher(str(config.incoming_dir), config=config)
 watch.main_loop()

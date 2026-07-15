@@ -51,7 +51,7 @@ def get_utc_obs_time(obs_day, obs_hour, obs_minute=0):
     # Fallback: use the last valid candidate (should be 13 months old)
     return candidate
 
-def decodeMessage(msg):
+def decode_message_legacy(msg):
     result = {}
     air_temperature_missing = False
     dewpoint_temperature_missing = False
@@ -536,3 +536,9 @@ def decodeMessage(msg):
             result.update(sea_state=None, wind_speed=None)
  
     return(result)
+
+
+def decodeMessage(msg):
+    from .parsing import parse_fm12
+
+    return dict(parse_fm12(msg).payload)

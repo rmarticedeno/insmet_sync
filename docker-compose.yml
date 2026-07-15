@@ -1,37 +1,30 @@
 services:
-  ofelia:
-    image: mcuadros/ofelia:latest
-    depends_on:
-      - scanner
-    command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${OFELIA_LOGFOLDER}:/app/${OFELIA_LOGFOLDER}
-    labels:
-      save-folder: /app/${OFELIA_LOGFOLDER}
-
   scanner:
     build: .
     environment:
       PYTHONUNBUFFERED: 1
-      BULLETIN_DATA: ${BULLETIN_DATA}
-      FTP_DATA: ${FTP_DATA}
-      REPORT_BACKUP_DATA: ${REPORT_BACKUP_DATA}
-      REPORT_DATA: ${REPORT_DATA}
-      INVALID_PROCESSED_REPORTS: ${INVALID_PROCESSED_REPORTS}
+      DATA_ROOT: /data
+      FTP_DATA: /data/ftp
+      REPORT_DATA: /data/ftp/uploads
+      BULLETIN_DATA: /data/ftp/bulletins
+      REPORT_BACKUP_DATA: /data/ftp/processed
+      INVALID_PROCESSED_REPORTS: /data/ftp/invalid
+      REJECTED_REPORT_DATA: /data/ftp/invalid
+      RETRY_REPORT_DATA: /data/ftp/retry
+      CLAIMED_REPORT_DATA: /data/ftp/processing
+      PROCESSING_FOLDER: /data/ftp/current-bulletins
       DESTINATION_FOLDER: ${DESTINATION_FOLDER}
-      PROCESSING_FOLDER: ${PROCESSING_FOLDER}
       DB_Table: ${DB_Table}
       DB_CONNSTRING: ${DB_CONNSTRING}
+      RETRY_BATCH_SIZE: ${RETRY_BATCH_SIZE:-20}
+      CLEANUP_AGE_DAYS: ${CLEANUP_AGE_DAYS:-1}
+      UPLOAD_STABILITY_WAIT_SECONDS: ${UPLOAD_STABILITY_WAIT_SECONDS:-30}
+      UPLOAD_STABILITY_CHECK_INTERVAL_SECONDS: ${UPLOAD_STABILITY_CHECK_INTERVAL_SECONDS:-2}
+      DB_CONNECT_TIMEOUT_SECONDS: ${DB_CONNECT_TIMEOUT_SECONDS:-10}
+      DB_QUERY_TIMEOUT_SECONDS: ${DB_QUERY_TIMEOUT_SECONDS:-30}
     volumes:
-      - ${BASE_FOLDER}:/app/${BASE_FOLDER}
+      - ${DATA_ROOT:-./localdata}:/data
     restart: always
-    labels:
-      ofelia.enabled: "true"
-      ofelia.job-exec.cleaning.schedule: "0 59 * * * *"
-      ofelia.job-exec.cleaning.command: 'sh -c "find ${FTP_DATA} -type f -mtime +1 -delete"'
-      ofelia.job-exec.bulletin-generation.schedule: "@hourly"
-      ofelia.job-exec.bulletin-generation.command: "/app/cron.py"
 
   ftp:
     build:
@@ -54,5 +47,32 @@ services:
       - "${FTP_MIN_PORT}-${FTP_MAX_PORT}:${FTP_MIN_PORT}-${FTP_MAX_PORT}"
       - "990:990"
     volumes:
-      - ${FTP_DATA}:/home/vsftpd/${FTP_USER}
+      - ${DATA_ROOT:-./localdata}/ftp:/home/vsftpd/${FTP_USER}
+    restart: always
+
+  scheduler:
+    build: .
+    command: ["python", "-m", "src.scheduler_service"]
+    environment:
+      PYTHONUNBUFFERED: 1
+      DATA_ROOT: /data
+      FTP_DATA: /data/ftp
+      REPORT_DATA: /data/ftp/uploads
+      BULLETIN_DATA: /data/ftp/bulletins
+      REPORT_BACKUP_DATA: /data/ftp/processed
+      INVALID_PROCESSED_REPORTS: /data/ftp/invalid
+      REJECTED_REPORT_DATA: /data/ftp/invalid
+      RETRY_REPORT_DATA: /data/ftp/retry
+      CLAIMED_REPORT_DATA: /data/ftp/processing
+      PROCESSING_FOLDER: /data/ftp/current-bulletins
+      DESTINATION_FOLDER: ${DESTINATION_FOLDER}
+      DB_Table: ${DB_Table}
+      DB_CONNSTRING: ${DB_CONNSTRING}
+      RETRY_BATCH_SIZE: ${RETRY_BATCH_SIZE:-20}
+      CLEANUP_AGE_DAYS: ${CLEANUP_AGE_DAYS:-1}
+      BULLETIN_JOB_TIMEOUT_SECONDS: ${BULLETIN_JOB_TIMEOUT_SECONDS:-300}
+      RETRY_JOB_TIMEOUT_SECONDS: ${RETRY_JOB_TIMEOUT_SECONDS:-240}
+      CLEANUP_JOB_TIMEOUT_SECONDS: ${CLEANUP_JOB_TIMEOUT_SECONDS:-45}
+    volumes:
+      - ${DATA_ROOT:-./localdata}:/data
     restart: always
