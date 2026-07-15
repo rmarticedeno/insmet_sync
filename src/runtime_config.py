@@ -87,10 +87,26 @@ class AppConfig:
             data_root = Path.cwd() / data_root
         data_root = data_root.resolve()
 
-        ftp_root = _resolve_path(os.getenv("FTP_DATA"), data_root, "ftp")
-        incoming_dir = _resolve_path(os.getenv("REPORT_DATA"), data_root, "ftp/uploads")
-        bulletin_dir = _resolve_path(os.getenv("BULLETIN_DATA"), data_root, "ftp/bulletins")
-        archive_dir = _resolve_path(os.getenv("REPORT_BACKUP_DATA"), data_root, "ftp/processed")
+        ftp_root = _resolve_path(
+            os.getenv("FTP_RUNTIME_ROOT") or os.getenv("FTP_DATA"),
+            data_root,
+            "ftp",
+        )
+        incoming_dir = _resolve_path(
+            os.getenv("INCOMING_DIR") or os.getenv("REPORT_DATA"),
+            data_root,
+            "ftp/uploads",
+        )
+        bulletin_dir = _resolve_path(
+            os.getenv("BULLETIN_DIR") or os.getenv("BULLETIN_DATA"),
+            data_root,
+            "ftp/bulletins",
+        )
+        archive_dir = _resolve_path(
+            os.getenv("ARCHIVE_DIR") or os.getenv("REPORT_BACKUP_DATA"),
+            data_root,
+            "ftp/processed",
+        )
         rejected_dir = _resolve_path(
             os.getenv("REJECTED_REPORT_DATA") or os.getenv("INVALID_PROCESSED_REPORTS"),
             data_root,
@@ -98,7 +114,11 @@ class AppConfig:
         )
         retry_dir = _resolve_path(os.getenv("RETRY_REPORT_DATA"), data_root, "ftp/retry")
         processing_dir = _resolve_path(os.getenv("CLAIMED_REPORT_DATA"), data_root, "ftp/processing")
-        current_bulletin_dir = _resolve_path(os.getenv("PROCESSING_FOLDER"), data_root, "ftp/current-bulletins")
+        current_bulletin_dir = _resolve_path(
+            os.getenv("CURRENT_BULLETIN_DIR") or os.getenv("PROCESSING_FOLDER"),
+            data_root,
+            "ftp/current-bulletins",
+        )
         destination_dir = _resolve_path(os.getenv("DESTINATION_FOLDER"), data_root, None)
 
         for label, path in (

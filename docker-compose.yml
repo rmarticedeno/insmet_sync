@@ -4,15 +4,14 @@ services:
     environment:
       PYTHONUNBUFFERED: 1
       DATA_ROOT: /data
-      FTP_DATA: /data/ftp
-      REPORT_DATA: /data/ftp/uploads
-      BULLETIN_DATA: /data/ftp/bulletins
-      REPORT_BACKUP_DATA: /data/ftp/processed
-      INVALID_PROCESSED_REPORTS: /data/ftp/invalid
+      FTP_RUNTIME_ROOT: /data/ftp
+      INCOMING_DIR: /data/ftp/uploads
+      BULLETIN_DIR: /data/ftp/bulletins
+      ARCHIVE_DIR: /data/ftp/processed
       REJECTED_REPORT_DATA: /data/ftp/invalid
       RETRY_REPORT_DATA: /data/ftp/retry
       CLAIMED_REPORT_DATA: /data/ftp/processing
-      PROCESSING_FOLDER: /data/ftp/current-bulletins
+      CURRENT_BULLETIN_DIR: /data/ftp/current-bulletins
       DESTINATION_FOLDER: ${DESTINATION_FOLDER}
       DB_Table: ${DB_Table}
       DB_CONNSTRING: ${DB_CONNSTRING}
@@ -24,7 +23,13 @@ services:
       DB_QUERY_TIMEOUT_SECONDS: ${DB_QUERY_TIMEOUT_SECONDS:-30}
     volumes:
       - ${DATA_ROOT:-./localdata}:/data
-      - ${FTP_HOST_PATH:-./localdata/ftp}:/data/ftp
+      - ${FTP_UPLOADS_HOST_PATH:-./localdata/ftp/uploads}:/data/ftp/uploads
+      - ${FTP_BULLETINS_HOST_PATH:-./localdata/ftp/bulletins}:/data/ftp/bulletins
+      - ${FTP_ARCHIVE_HOST_PATH:-./localdata/ftp/processed}:/data/ftp/processed
+      - ${FTP_REJECTED_HOST_PATH:-./localdata/ftp/invalid}:/data/ftp/invalid
+      - ${FTP_RETRY_HOST_PATH:-./localdata/runtime/retry}:/data/ftp/retry
+      - ${FTP_PROCESSING_HOST_PATH:-./localdata/runtime/processing}:/data/ftp/processing
+      - ${FTP_CURRENT_BULLETINS_HOST_PATH:-./localdata/runtime/current-bulletins}:/data/ftp/current-bulletins
     restart: always
 
   ftp:
@@ -57,15 +62,14 @@ services:
     environment:
       PYTHONUNBUFFERED: 1
       DATA_ROOT: /data
-      FTP_DATA: /data/ftp
-      REPORT_DATA: /data/ftp/uploads
-      BULLETIN_DATA: /data/ftp/bulletins
-      REPORT_BACKUP_DATA: /data/ftp/processed
-      INVALID_PROCESSED_REPORTS: /data/ftp/invalid
+      FTP_RUNTIME_ROOT: /data/ftp
+      INCOMING_DIR: /data/ftp/uploads
+      BULLETIN_DIR: /data/ftp/bulletins
+      ARCHIVE_DIR: /data/ftp/processed
       REJECTED_REPORT_DATA: /data/ftp/invalid
       RETRY_REPORT_DATA: /data/ftp/retry
       CLAIMED_REPORT_DATA: /data/ftp/processing
-      PROCESSING_FOLDER: /data/ftp/current-bulletins
+      CURRENT_BULLETIN_DIR: /data/ftp/current-bulletins
       DESTINATION_FOLDER: ${DESTINATION_FOLDER}
       DB_Table: ${DB_Table}
       DB_CONNSTRING: ${DB_CONNSTRING}
@@ -76,5 +80,11 @@ services:
       CLEANUP_JOB_TIMEOUT_SECONDS: ${CLEANUP_JOB_TIMEOUT_SECONDS:-45}
     volumes:
       - ${DATA_ROOT:-./localdata}:/data
-      - ${FTP_HOST_PATH:-./localdata/ftp}:/data/ftp
+      - ${FTP_UPLOADS_HOST_PATH:-./localdata/ftp/uploads}:/data/ftp/uploads
+      - ${FTP_BULLETINS_HOST_PATH:-./localdata/ftp/bulletins}:/data/ftp/bulletins
+      - ${FTP_ARCHIVE_HOST_PATH:-./localdata/ftp/processed}:/data/ftp/processed
+      - ${FTP_REJECTED_HOST_PATH:-./localdata/ftp/invalid}:/data/ftp/invalid
+      - ${FTP_RETRY_HOST_PATH:-./localdata/runtime/retry}:/data/ftp/retry
+      - ${FTP_PROCESSING_HOST_PATH:-./localdata/runtime/processing}:/data/ftp/processing
+      - ${FTP_CURRENT_BULLETINS_HOST_PATH:-./localdata/runtime/current-bulletins}:/data/ftp/current-bulletins
     restart: always
